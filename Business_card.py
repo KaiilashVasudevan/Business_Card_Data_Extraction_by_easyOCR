@@ -54,8 +54,6 @@ def create_table():
     finally:
         cur.close()
 
-# conn = init_connection()
-# cur = conn.cursor()
 def insert_card(insert_final_values):
     conn = init_connection()
     try:
@@ -130,7 +128,7 @@ def get_one_contact(name):
     conn = init_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM CUSTOMERS WHERE NAME ={name}")
+        cur.execute("SELECT * FROM CUSTOMERS WHERE NAME = %s", (name,))
         rows = cur.fetchall()
         return rows
     except DatabaseError as e:
@@ -227,14 +225,13 @@ if authentication_status:
     # authenticator.logout("Logout", "main")
     df = []
     bound1_df = []
+
     # st.cache_data for files, APIs, data.
     # Image Reader : EasyOCR
     @st.cache_data
     def image_reco_easyocr():
-        reader = easyocr.Reader(['en'])
+        reader = easyocr.Reader(['en'], gpu=False)
         return reader
-
-    # reader_easyocr = image_reco_easyocr()
 
     if selected == "Upload and Manage DB":
         create_table()
@@ -252,15 +249,20 @@ if authentication_status:
                 reader_easyocr = image_reco_easyocr()
                 input_uploaded_image_file = Image.open(uploaded_image_file)
                 st.image(input_uploaded_image_file, width=400, caption='Uploaded Customer Business Card')
+
+                # This just displays the image
+                # Uses EasyOCR on the image array
                 bounds1 = reader_easyocr.readtext(np.array(input_uploaded_image_file), detail=0)
                 bounds1_df = uploaded_image(bounds1)
                 df = pd.DataFrame(bounds1_df)
 
                 # Prepare Image to store in Database
+                # Converts extracted text into a DataFrame
                 image_bytes = io.BytesIO()
                 input_uploaded_image_file.save(image_bytes, format='PNG')
                 image_data = image_bytes.getvalue()
 
+                # Saves the image to a byte stream
                 data = {"Image": [image_data]}
                 df1 = pd.DataFrame(data)
                 Total_df = pd.concat([df, df1], axis=1)
@@ -345,58 +347,7 @@ if authentication_status:
                             st.spinner("Updating data...")
 
             if selected == "Update Customer":
-                names = ["Select Customer Name"]
-                list_of_names = get_all_contacts()
-                # names = ["Select Customer Name"]
-                for i in list_of_names:
-                    if i not in names:
-                        names.append(i[0])
-                # selected_name = st.selectbox("Select Customer Details", options=names)
-                # customers = get_all_customers()
-
-                customer_names = [f"{cust['id']}: {cust['name']}" for cust in list_of_names]
-                selected = st.selectbox("Select a customer to edit", customer_names)
-
-                if selected:
-                    cust_id = int(selected.split(":")[0])
-                    selected_cust = next(c for c in CUSTOMERS if c['id'] == cust_id)
-                    with st.form("update_form"):
-                        col_1, col_2 = st.columns([4, 4])
-                        with col_1:
-                            edited_name = st.text_input('Name *', value=selected_cust["name"])
-                            edited_des = st.text_input('Designation *', value=selected_cust[""])
-                            edited_com = st.text_input('Company name', value=selected_cust[""])
-                            edited_num = st.text_input('Mobile', value=selected_cust["phone"])
-
-                        with col_2:
-                            edited_email = st.text_input('Email', value=selected_cust["email"])
-                            edited_web = st.text_input('Website', value=selected_cust[""])
-                            edited_add = st.text_input('Address', value=selected_cust["city"])
-                            edited_pin = st.text_input('Pincode', value=selected_cust[""])
-
-                            update_contact = st.form_submit_button("Update contact")
-
-                        update_btn = st.form_submit_button("Update Customer")
-
-                        if update_btn:
-                            update_customer(cust_id, name, email, phone, city, country)
-                # for index, i in modified_df.iterrows():
-                #     updated_final_values = (i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8])
-                #     update_card(updated_final_values)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                st.write("Coming Soon...")
 
         if selected == "Delete Record":
             names = ["Select Customer Name"]
@@ -422,11 +373,11 @@ if authentication_status:
     if selected == "Contact":
         st.subheader("My Contact Details")
         st.write("Project: BizCardX_Extracting Business Card Data")
-        st.write("Created by: Akellesh Vasudevan")
+        st.write("Created by: Kaiilash Vasudevan")
         st.write("LinkedIn Profile:")
-        st.markdown("https://www.linkedin.com/in/akellesh/")
+        st.markdown("https://www.linkedin.com/in/kaiilash-vasudevan/")
         st.write("Github Profile:")
-        st.markdown("https://github.com/Akellesh/BizCardX_-Extracting-Business-Card-Data-with-OCR")
+        st.markdown("https://github.com/KaiilashVasudevan")
 
     # Home Page of Project
     if selected == "Home":
