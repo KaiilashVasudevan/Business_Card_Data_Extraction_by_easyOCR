@@ -24,10 +24,10 @@ with file_path.open("rb") as file:
     hashed_passwords = pickle.load(file)
 
 # Home Page Title
-st.set_page_config(page_title="BizCardX_ Extracting Business Card Data with OCR", layout="wide")
+st.set_page_config(page_title="Extracting Business Card Data with OCR", layout="wide")
 
 authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
-                                    'BizCardX Project Menu', 'guvi', cookie_expiry_days=30)
+                                    'Business Card Project Menu', 'guvi', cookie_expiry_days=30)
 
 names, authentication_status, username = authenticator.login("Login", "main")
 
@@ -201,12 +201,12 @@ if authentication_status == None:
 
 if authentication_status:
     st.write(f"Welcome {names}")
-    # authenticator.logout("Logout", "main")
+    authenticator.logout("Logout", "main")
     with st.sidebar:
         selected = option_menu(
-            menu_title="BizCardX Project Menu",
-            options=["Home", "Upload and Manage DB", "Settings", "Contact"],
-            icons=["house", "upload", "gear", "envelope"],
+            menu_title="Business Card Project Menu",
+            options=["Home", "Upload and Manage DataBase", "Contact"],
+            icons=["house", "upload", "envelope"],
             menu_icon="cast",
             default_index=0,
             # orientation="horizontal",
@@ -222,7 +222,6 @@ if authentication_status:
                 "nav-link-selected": {"background-color": "grey"},
             },
         )
-    # authenticator.logout("Logout", "main")
     df = []
     bound1_df = []
 
@@ -364,11 +363,6 @@ if authentication_status:
                 st.success('Customer Business Card Deleted successfully')
             list_of_names = get_all_contacts()
 
-    # User Settings
-    if selected == "Settings":
-        st.subheader("User Settings")
-        authenticator.logout("Logout Application", "main")
-
     # Contact Information
     if selected == "Contact":
         st.subheader("My Contact Details")
@@ -382,7 +376,7 @@ if authentication_status:
     # Home Page of Project
     if selected == "Home":
         # st.title(f"you have selected {selected}")
-        st.subheader('BizCardX_Extracting Business Card with OCR')
+        st.subheader('Extracting Business Card with OCR')
         st.subheader("Problem Statement:")
         st.write('''You have been tasked with developing a Streamlit application that allows users to upload an image 
                 of a business card and extract relevant information from it using easyOCR. The extracted information 
@@ -393,7 +387,7 @@ if authentication_status:
                 along with the uploaded business card image. The database should be able to store multiple entries, 
                 each with its own business card image and extracted information.''')
         st.write('''To achieve this, you will need to use Python, Streamlit, easyOCR, and a database management 
-                system like SQLite or MySQL. The application should have a simple and intuitive user interface 
+                system like PostgreSQL, SQLite or MySQL. The application should have a simple and intuitive user interface 
                 that guides users through the process of uploading the business card image and extracting its information. 
                 The extracted information should be displayed in a clean and organized manner, and users should be able 
                 to easily add it to the database with the click of a button. And Allow the user to Read the data,
